@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import configparser
 
@@ -43,10 +43,15 @@ THIRD_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders'
 ]
 LOCAL_APPS = [
-    'applications.users'
+    'applications.users',
+    'applications.account',
+    'applications.notes',
+    'applications.events'
 ]
 
 
@@ -56,6 +61,8 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -118,9 +125,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Authentication
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ]
+}
+
+#JWT settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=60),
+    'UPDATE_LAST_LOGIN':True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY':config['DEFAULT']['JWT_KEY']
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 LANGUAGE_CODE = 'en-us'
 
@@ -145,3 +168,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "users.Users"
 APPEND_SLASH=False
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = config['DEFAULT']['EMAIL_USER']
+EMAIL_HOST_PASSWORD = config['DEFAULT']['EMAIL_PASSWORD']
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False

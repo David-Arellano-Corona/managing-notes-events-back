@@ -40,6 +40,10 @@ class Users(TimeStampedModel, SoftDeletableModel, PermissionsMixin, AbstractBase
 
     objects = UsersManager()
 
+    @property
+    def full_name(self):
+        return f'{self.name} {self.lastname}'
+
     def __str__(self):
         return self.email
 
